@@ -15,7 +15,7 @@
 #region functions
 def delimita_inicio_da_tabela(linha, nome_da_tabela):
 	if nome_da_tabela.strip() in linha.strip():
-		return True
+			return True
 	
 def delimita_fim_da_tabela(linha):
 	if ('[' in linha.strip() or ';' in linha.strip()) or not linha.strip():
@@ -51,7 +51,7 @@ def remover_primeira_coluna(matriz):
 def remover_primeira_linha(matriz):
 	return matriz[1:]
 
-def reduzir_tabela(matriz_original, novo_tamanho):
+def reduzir_tabela_com_divisao(matriz_original, novo_tamanho):
 	if (len(matriz_original)-1) % novo_tamanho != 0:
 		return print("A matriz não é redutível para esse número de linhas")
 	
@@ -73,6 +73,35 @@ def reduzir_tabela(matriz_original, novo_tamanho):
 			for k in range(fator):
 				soma += float(matriz_filtrada[i*fator-k][j])
 			nova_matriz[i][j] = soma/fator
+
+	nova_matriz.insert(0,matriz_original[0])
+
+	for i in range(len(nova_matriz)):
+		nova_matriz[i].insert(0,matriz_original[i][0])
+	return nova_matriz
+
+def reduzir_tabela_com_soma(matriz_original, novo_tamanho):
+	if (len(matriz_original)-1) % novo_tamanho != 0:
+		return print("A matriz não é redutível para esse número de linhas")
+	
+	matriz_filtrada = remover_primeira_linha(remover_primeira_coluna(matriz_original))
+	nova_matriz = []
+
+	# Fator é a quantidade de linhas antigas serão combinadas para que uma nova seja criada
+	fator = int(len(matriz_filtrada)/novo_tamanho)
+
+	# Povoamento da matriz nova
+	for i in range(novo_tamanho):
+		nova_matriz.append([])
+		for j in range(len(matriz_original[1])-1):
+			nova_matriz[i].append(1)
+
+	for i in range(novo_tamanho):
+		for j in range(len(matriz_filtrada[1])):
+			soma = 0
+			for k in range(fator):
+				soma += float(matriz_filtrada[i*fator-k][j])
+			nova_matriz[i][j] = soma
 
 	nova_matriz.insert(0,matriz_original[0])
 
@@ -111,6 +140,9 @@ def substituir_tabela(caminho_arquivo, nova_matriz, nome_tabela):
 	except:
 		print("Erro na função substituir tabela.")
 
+'''
+Retorna uma lista de strings com o nome das tabelas que contém o parâmetro especificado.
+'''
 def lerParams(param, caminho_arquivo):
 	nome_das_tabelas = []
 	
@@ -127,7 +159,7 @@ def lerParams(param, caminho_arquivo):
 									nome_das_tabelas.append(linha)
 	return nome_das_tabelas
 
-def reduzir_matriz(matriz, p, q):
+def cortar_matriz(matriz, p, q):
 	if p > len(matriz) or q > len(matriz[-1]):
 		print("A nova matriz é maior que a matriz original.")
 		return None
@@ -137,21 +169,21 @@ def reduzir_matriz(matriz, p, q):
 #endregion
 
 caminho_arquivo = 'Atlantis_base/atlantis_v2copy.txt'
-nome_param = "EmissionActivityRatio"
+nome_param = "CapacityFactor"
 novo_tamanho = 1
 nome_das_tabelas = lerParams(nome_param, caminho_arquivo)
 tabelas_diferentes = ['Conversionld', 'Conversionls', 'Conversionlh']
 
 try :
 	for nome_da_tabela in nome_das_tabelas:
-		substituir_tabela(caminho_arquivo, reduzir_tabela(ler_tabela(caminho_arquivo, nome_da_tabela), novo_tamanho), nome_da_tabela)
+		substituir_tabela(caminho_arquivo, reduzir_tabela_com_soma(ler_tabela(caminho_arquivo, nome_da_tabela), novo_tamanho), nome_da_tabela)
 except:
 	pass
 
-for tabelas_diferente in tabelas_diferentes:
-	if tabelas_diferente == 'Conversionld':
-		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo,tabelas_diferente),2,2), tabelas_diferente)
-	if tabelas_diferente == 'Conversionls':
-		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo, tabelas_diferente), 2, 2), tabelas_diferente)
-	if tabelas_diferente == 'Conversionlh':
-		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo, tabelas_diferente), 2, 2), tabelas_diferente)
+# for tabelas_diferente in tabelas_diferentes:
+# 	if tabelas_diferente == 'Conversionld':
+# 		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo,tabelas_diferente),2,2), tabelas_diferente)
+# 	if tabelas_diferente == 'Conversionls':
+# 		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo, tabelas_diferente), 2, 2), tabelas_diferente)
+# 	if tabelas_diferente == 'Conversionlh':
+# 		substituir_tabela(caminho_arquivo, reduzir_matriz(ler_tabela(caminho_arquivo, tabelas_diferente), 2, 2), tabelas_diferente)
