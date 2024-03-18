@@ -479,12 +479,6 @@ TotalCapacityAnnual:
     dtype: float
     default: 0
     calculated: True
-TotalDiscountedCost:
-    indices: [REGION,YEAR]
-    type: result
-    dtype: float
-    default: 0
-    calculated: True
 TotalTechnologyAnnualActivity:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result

@@ -1,0 +1,361 @@
+# last modification: Mar 02, 2023 by M Eliasinul Islam
+
+# This file defines the input variables for the clewsy model building script.
+# Based on the data in this file, clewsy builds the SETS, InputActivityRatio and OutputActivityRatio
+# Authors: The information in this file has brought together by Nastaran Arianpoo for the project called BC (British Columbia, Canada) Nexus of water, food, energy model.
+# Collaborators: Several generic information as noted above specific sections provided by Taco Niet and Abhishek Shivakumar. The initial YAML shell provided by Taco Niet.
+# Objective: the purpose of this file is to build the clewsy base needed to establish the energy, water, food portfolios (Sets, IAR and OAR) of BC Nexus model 
+
+
+# The model name here must match the model name in MoManI.
+# It is suggested that the empty shell be uploaded first, and the model in the shell renamed to match the model name here.
+Model: V1.1.7_BC_CLEWS_Model-REF Scenario-LND intensity Ave
+
+# Either otoole or MoManI (capitalization matters)
+OutputFormat: otoole
+otooleOutputDirectory: input_usuario/Sets/Clewsy_Saidas
+
+
+# The OSeMOSYS regions in the model.  For most models, leave this as REGION1 as CLEWs regions are
+# built with technologies and commodities rather than OSeMOSYS regions.
+Regions: {REGION1: ['Region 1', '#000000']}
+
+# Add or reduce the model time horizon as needed.
+Years:
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+  - 2025
+  - 2026
+  - 2027
+  - 2028
+  - 2029
+  - 2030
+  - 2031
+  - 2032
+  - 2033
+  - 2034
+  - 2035
+  - 2036
+  - 2037
+  - 2038
+  - 2039
+  - 2040
+  - 2041
+  - 2042
+  - 2043
+  - 2044
+  - 2045
+  - 2046
+  - 2047
+  - 2048
+  - 2049
+  - 2050
+
+# The labels for the land regions being represented in the model.
+# These must match the file names in the clustered land use data in the data directory.
+# The land regions are usually two or three letter codes.
+LandRegions:
+  - BC1
+  
+
+# Connecting the land use (and thereby the energy needs) from a given land region to an electrical grid.
+# Each land region must have an associated electrical grid.  Grids have a single letter code.
+LandToGridMap: {
+  BC1: B,  # Region BC1 is connected to grid B (in this version of the model, the assumption is, we only have one grid in BC)
+}
+
+# Data directory and file names for the land use data for the model.
+# The data for region RG1 will be in file data/clustering_results_RG1.csv
+DataDirectoryName: "input_usuario/Sets/ClusterDataSet"
+ClusterBaseFileName: clustering_results_
+PrecipitationClusterBaseFileName: clustering_results_prc_
+EvapotranspirationClusterBaseFileName: clustering_results_evt_
+IrrigationWaterDeficitClusterBaseFileName: clustering_results_cwd_
+
+
+# Agricultural intensities - generally do not change.
+IntensityList: {
+  L: Low,
+  I: Intermediate,
+  H: High
+}
+
+# Irrigation types - generally do not change.
+IrrigationTypeList: {
+  R: Rain-fed,
+  I: Irrigation
+}
+
+# Land use codes for other lands not included in croplands.
+LandUseCodes: {
+  BAR: Barren and sparsely vegetated land,
+  FOR: Forest land,
+  GRS: Grassland & woodland,
+  BLT: Built-up land,
+  WAT: Water bodies,
+  OTH: Other agricultural land
+}
+
+# Evapotranspiration values for water balances for other land uses.
+# Values given in this sample were taken from the Bolivia model by Abhishek Shivakumar.
+# Generally no need to edit these values.
+EvapotranspirationPercentPRCOtherLandUse: {  
+  BAR: 0.773,
+  FOR: 0.691,
+  GRS: 0.694,
+  BLT: 0.631,
+  WAT: 0.571,
+  OTH: 0.694
+}
+
+# Ratios for how much excess water goes to groudwater vs surface runoff.
+# Values given in this sample were taken from the Bolivia model by Abhishek Shivakumar.
+# Generally no need to edit these values.
+GroundwaterPercentofExcessOtherLandUse: {  
+  BAR: 0.009,
+  FOR: 0.077,
+  GRS: 0.051,
+  BLT: 0.072,
+  WAT: 0.017,
+  OTH: 0.051
+}
+
+# Percent of excess water (Irrigation + Precipitation - Evapotranspiration) that returns as groundwater.
+# for croplands.  Rest returns as Runoff.
+GroundwaterPercentofExcess: 0.051
+
+# Defines the final demand fuels in the model, and the sectors they are used in.
+EndUseFuels: {
+  IND: ['DSL', 'BIO', 'NGS', 'ELCB02'],
+  RES: ['KER', 'BIO', 'NGS', 'ELCB02'],
+  COM: ['KER', 'BIO', 'NGS', 'ELCB02'],
+  AGR: ['DSL', 'NGS', 'ELCB02'],
+  TRA: ['GSL', 'DSL', 'HFO', 'JFL', 'BIO', 'NGS', 'LPG', 'ELCB02']
+}
+
+# Imports and exports - add and remove fuels as needed to represent a given region.
+ImportFuels: ['CRU', 'COA', 'JFL', 'LPG', 'GSL', 'KER', 'DSL', 'HFO']
+ExportFuels: ['CRU', 'NGS', 'COA', 'BIO']
+
+# Domestically available fuels.
+DomesticMining: ['COA', 'NGS', 'CRU', 'URN']
+DomesticRenewables: ['WND', 'HYD', 'BIO', 'SOL', 'GEO']
+
+# Transformation technologies that connect parts of the CLEWs model together.  For example, power transmission between grids, 
+# oil refineries, biofuel plants, etc.
+# Note:  These technologies cannot create fuels but assume that their fuels are created elsewhere
+#   (either in the DomesticMining, DomesticRenewables or ImportFuels).
+# Structure:
+#   ['TECHNOLOGY', 'INPUTFUEL', 'IAR', 'OUTPUTFUEL', 'OAR', 'Name', 'ModeOfOperation']
+# One can use multiple lines for a single technology to create additional input or output activity ratios for
+# a given technology (such as the refinery example below).
+TransformationTechnologies: [
+# Example of 90% efficient grid distribution system:
+  ['PWRTRNB01', 'ELCB01', '1.11', 'ELCB02', '1', 'Power transmission grid B', '1'],
+  
+# Example of land use impact of a power generation technology:
+# ['power plant name and discription', 'input fuel', 'input activity ratio: for 1PJ of output how much land will be needded', 'output fuel- leave it blank', 'output activity raio- leave it blank', 'discription-leave it blank', 'Mode of operation'],
+ 
+ 
+ ['LNDAGRBC1C01', '', '', 'LND4PWR', '1', '', '54'], #seven times for all land clusters from GEAZ clustering
+ ['LNDAGRBC1C02', '', '', 'LND4PWR', '1', '', '54'], # connection between LND4PWR with Built-up land in LNDAGRBC
+ ['LNDAGRBC1C03', '', '', 'LND4PWR', '1', '', '54'],
+ ['LNDAGRBC1C04', '', '', 'LND4PWR', '1', '', '54'],
+ ['LNDAGRBC1C05', '', '', 'LND4PWR', '1', '', '54'],
+ ['LNDAGRBC1C06', '', '', 'LND4PWR', '1', '', '54'],
+ ['LNDAGRBC1C07', '', '', 'LND4PWR', '1', '', '54'],
+ 
+ 
+ ['PWRNGSB01', 'LND4PWR', '0.0006', '', '', '', '1'], 
+
+ ['PWRWNDB01', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB02', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB03', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB04', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB05', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB06', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB07', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB08', 'LND4PWR', '0.00038', '', '', '', '1'],
+
+ ['PWRBIOB01', 'LND4PWR', '0.293', '', '', '', '1'],
+ ['PWRBIOB02', 'LND4PWR', '0.293', '', '', '', '1'],
+ ['PWRBIOB03', 'LND4PWR', '0.293', '', '', '', '1'],
+ ['PWRBIOB04', 'LND4PWR', '0.293', '', '', '', '1'],
+ ['PWRBIOB05', 'LND4PWR', '0.293', '', '', '', '1'],
+
+ ['PWRSOLB01', 'LND4PWR', '0.0044', '', '', '', '1'],
+
+ ['PWRHYDB01', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB02', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB03', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB04', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB05', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB06', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB07', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB08', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB09', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB10', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB11', 'LND4PWR', '0.022', '', '', '', '1'],
+ ['PWRHYDB12', 'LND4PWR', '0.022', '', '', '', '1'],
+
+# Technologies for future expansions
+ ['PWRGEOB01', 'LND4PWR', '0.00054', '', '', '', '1'],
+ ['PWRGEOB02', 'LND4PWR', '0.00054', '', '', '', '1'],
+ ['PWRGEOB03', 'LND4PWR', '0.00054', '', '', '', '1'],
+ ['PWRURNB01', 'LND4PWR', '0.00003', '', '', '', '1'],
+ ['PWRWNDB09', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB10', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRWNDB11', 'LND4PWR', '0.00038', '', '', '', '1'],
+ ['PWRBIOB06', 'LND4PWR', '0.293', '', '', '', '1'],
+ ['PWRHYDB13', 'LND4PWR', '0.022', '', '', '', '1'],
+
+
+# Example of a crude oil refinery that produces a number of output products.
+# ['UPSCRU001', 'CRU', '1.0', 'LPG', '0.0081', 'Crude oil refinery', '1'],
+# ['UPSCRU001', '', '', 'GSL', '0.1694', 'Crude oil refinery', '1'],
+# ['UPSCRU001', '', '', 'KER', '0.0694', '', '1'],
+# ['UPSCRU001', '', '', 'DSL', '0.3221', '', '1'],
+# ['UPSCRU001', '', '', 'HFO', '0.1429', '', '1'],
+# ['UPSCRU001', '', '', 'OHC', '0.0816', '', '1'],
+  
+  # Biofuel Processing
+  # ['UPSPLM001', 'CRPPLM', '1.0', 'PLMKER', '0.2', 'Palm oil mill.', '1'],
+  # ['UPSPLM001', '', '', 'PLMPOM', '0.3', '', '1'],
+  # ['UPSPLM001', '', '', 'PLMCRU', '0.5', '', '1'],
+  
+  # Palm Oil Refinery
+  
+  # Palm oil blending plant
+  
+]
+
+# List of power plants.
+# Format is:
+# PLANTCODE:  ['Power plant description.', InputActivityRatio, WaterWithdrawals, WaterReturnedAsSurfaceWater]
+# PWRNGSM01: ['Description of plant (500MW).', InputActRatio, WaterWithdrawals, WaterReturn],
+PowerPlants: {
+  PWRNGSB01: ['Aggregated Natural gas power stations on grid B.', 2.7, 0.0227, 0.0225],
+
+  PWRWNDB01:  ['wind plant on B grid, PR Region (144 MW).', 3.33, 0, 0], 
+  PWRWNDB02:  ['wind plant on B grid, PR Region (102 MW).', 3.33, 0, 0],
+  PWRWNDB03:  ['wind plant on B grid, PR Region (142 MW).', 3.33, 0, 0],
+  PWRWNDB04:  ['wind plant on B grid, PR Region (180 MW).', 3.33, 0, 0], 
+  PWRWNDB05:  ['wind plant on B grid, PR Region (15 MW).', 3.33, 0, 0],
+  PWRWNDB06:  ['wind plant on B grid, VI Region (99 MW).', 3.33, 0, 0],
+  PWRWNDB07:  ['wind plant on B grid, K-SE Region (15 MW).', 3.33, 0, 0], 
+  PWRWNDB08:  ['wind plant on B grid, K-SE Region (15 MW).', 3.33, 0, 0],
+
+  PWRBIOB01:  ['Bio plant on B grid, PR Region (49 MW).', 2.85, 0.0291, 0.0288], 
+  PWRBIOB02:  ['Bio plant on B grid, PG-J Region (184 MW).', 2.85, 0.0291, 0.0288],
+  PWRBIOB03:  ['Bio plant on B grid, VI Region (55 MW).', 2.85, 0.0291, 0.0288],
+  PWRBIOB04:  ['Bio plant on B grid, K-SE Region (270 MW).', 2.85, 0.0291, 0.0288], 
+  PWRBIOB05:  ['Bio plant on B grid, LM Region (160 MW).', 2.85, 0.0291, 0.0288],
+
+  PWRSOLB01:  ['Solar plant on B grid, K-Se Region (1 MW).', 2.85, 0, 0],
+  
+ 
+  PWRHYDB01:  ['Large hydro plant on B grid, PR Region (2730 MW).', 1.05, 0, 0], 
+  PWRHYDB02:  ['Meduim-size hydro plant on B grid, PR Region (694 MW).', 1.05, 0, 0],
+  PWRHYDB03:  ['Aggregated hydro plants on B grid, N Region (312 MW).', 1.67, 0, 0],
+  PWRHYDB04:  ['Large hydro plant on B grid, PR-G Region (960 MW).', 1.05, 0, 0], 
+  PWRHYDB05:  ['Aggregated hydro plants on B grid, PR_G Region (58 MW).', 1.67, 0, 0],
+  PWRHYDB06:  ['Large hydro plant on B grid, PG-J Region (2746 MW).', 1.05, 0, 0],
+  PWRHYDB07:  ['Aggregated hydro plants on B grid, PG-J Region (36.6 MW).', 2.5, 0, 0], 
+  PWRHYDB08:  ['Aggregated hydro plants on B grid, VI Region (595.5 MW).', 1.33, 0, 0],
+  PWRHYDB09:  ['Aggregated hydro plants on B grid, LM Region (2363.5 MW).', 1.7, 0, 0],
+  PWRHYDB10:  ['Large hydro plant on B grid, K-SE Region (2480 MW).', 1.05, 0, 0], 
+  PWRHYDB11:  ['Large hydro plant on B grid, K-SE Region (805 MW).', 1.05, 0, 0],
+  PWRHYDB12:  ['Aggregated hydro plants on B grid, K-SE Region (2730 MW).', 1.25, 0, 0],
+  
+
+  # Technologies for future expansions
+  PWRGEOB01:  ['Geothermal plant (Steam technology) on B grid, (? MW).', 6.67, 0.0021, 0.0006],
+  PWRGEOB02:  ['Geothermal plant (Steam technology) on B grid, (? MW).', 6.67, 0.0021, 0.0006],
+  PWRGEOB03:  ['Geothermal plant (Steam technology) on B grid, (? MW).', 6.67, 0.0021, 0.0006],
+  PWRURNB01:  ['Nuclear plant (OT technology) on B grid, (? MW).', 3.0, 0.0378, 0.0375],
+  PWRWNDB09:  ['Wind plant on B grid for future expansions, (? MW).', 3.33, 0, 0],
+  PWRWNDB10:  ['Wind plant on B grid for future expansions, (? MW).', 3.33, 0, 0], 
+  PWRWNDB11:  ['Wind plant on B grid for future expansions, (? MW).', 3.33, 0, 0],
+  PWRBIOB06:  ['Bio plant on B grid for future expansions, (? MW).', 2.85, 0.0291, 0.0288],
+  PWRHYDB13:  ['Hydro plants on B grid for future expansions, (? MW).', 1.25, 0, 0],
+    
+}
+
+# Emissions to be tracked in the model.
+Emissions: {
+  CO2: ['Carbon dioxide emissions.', '#00cc66']
+}
+
+# Timeslices to define for the model.
+Timeslices: {
+  SEA1D: ['Season 1 Daytime', '#000000'],
+  SEA1N: ['Season 1 Nighttime', '#cc9900'],
+  SEA2D: ['Season 2 Daytime', '#00cc66'],
+  SEA2N: ['Season 2 Nighttime', '#ffffcc'],
+  SEA3D: ['Season 3 Daytime', '#99ff66'],
+  SEA3N: ['Season 3 Nighttime', '#cc3333'],
+  SEA4D: ['Season 4 Daytime', '#99ff66'],
+  SEA4N: ['Season 4 Nighttime', '#cc3333']
+}
+
+# Crop yield factors for calibrating the model.  Codes here must match crop codes in the land use data.
+CropYieldFactors: {
+    ALF: 0.95,
+    WHE: 0.95,
+    RAP: 0.95,
+    OAT: 0.95,
+    BAR: 0.95,
+    #corrected from 'BRL'
+    PEA: 0.95,
+    MAI: 0.95,
+    RYE: 0.95,
+    PTW: 0.95,
+    OTH: 0.95
+}
+
+# Naming conventions for fuels and other technologies above.
+NamingConvention: {
+  IND: 'Industry',
+  RES: 'Residential',
+  COM: 'Commercial',
+  AGR: 'Agricultural',
+  TRA: 'Transport',
+  OTH: 'Other',
+  BIO: 'Biomass',
+  COA: 'Coal',
+  CRU: 'Crude oil',
+  DSL: 'Diesel', 
+  ELC001: 'Electricity from power plants',
+  ELC002: 'Electricity from transmission',
+  ELCB01: 'Electricity from power plants in region B',
+  ELCB02: 'Electricity from transmission in region B',
+  GSL: 'Gasoline', 
+  HFO: 'Heavy fuel oil',
+  NGS: 'Natural gas',
+  KER: 'Kerosene',  
+  LPG: 'LPG',
+  OHC: 'Other hydrocarbons',
+  GEO: 'Geothermal', 
+  HYD: 'Hydropower', 
+  SOL: 'Solar', 
+  WND: 'Wind',
+  CHC: 'Charcoal',
+  PCK: 'Petroleum coke',
+  JFL: 'Jet fuel',
+  URN: 'Uranium',
+  ALF: 'Alfalfa',
+  WHE: 'Wheat',
+  RAP: 'Rapeseed',
+  OAT: 'Oat',
+  BAR: 'Barley',
+  #corrected from 'BRL'
+  PEA: 'Dry pea',
+  MAI: 'Maize',
+  RYE: 'Rye',
+  PTW: 'White potato'
+  #corrected from 'PWT'
+  
+}
