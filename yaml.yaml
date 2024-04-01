@@ -1,0 +1,16 @@
+dataFolder : "data"
+otooleConfig : "configs/otooleBC.yaml"
+combedData : "data/preprocessed/preprocesseddata.txt"
+processedData : "processedData.txt"
+script : "scripts/preprocess.py"
+model : "Assets/models/model.txt"
+processedModel : "models/preprocessed/preprocessedModel.txt"
+lpfile : "Assets/results/output.lp"
+solFile: "Assets/results/solution.sol"
+resultFile : "Assets/results/result.txt"
+convertLog : "logs/convertLog.txt"
+clewsyModel : "Assets/models/clewsyModel.txt"
+processLog : "logs/dataProcessLog.txt"
+modelLog : "logs/modelResult.txt"
+
+code: |
