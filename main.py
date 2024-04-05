@@ -1,5 +1,6 @@
 from otoole import convert, convert_results
 import yaml
+import time
 import os
 from Scripts.organize_files import collect_files
 from Scripts.Visualization import visualization
@@ -12,8 +13,11 @@ class Optimization() :
     
     def run(self, yamlFilePath):
         paths = self.yamlToDict(yamlFilePath)
+        first = time.now()
         self.calls(paths['dataFolder'], paths['otooleConfig'], paths['combedData'], paths['processedData'], paths['script'], paths['model'], paths['processedModel'], paths['lpFile'], paths['solFile'], paths['resultFile'], paths['ClewsyModel'])
-    
+    	last = time.now()
+        return (last - first)
+        
     def calls(self, dataFolder = 'Assets/data', otooleConfig = 'Assets/otooleConfig.yaml', combedData = 'Assets/data.txt', processedData = 'Assets/processedData.txt', script = 'Assets/preprocess.py', model='Assets/model.txt', processedModel='Assets/processedModel.txt', lpFile = 'Assets/result.lp', solFile = 'Assets/solution.sol', resultFile = 'Assets/results/results.csv', ClewsyModel = 'Scripts/GabrielModel.yaml'):
         # Step minus one - build the model with clewsy
         # os.system("clewsy build " + ClewsyModel)
@@ -42,3 +46,4 @@ class Optimization() :
 
 optimization = Optimization()
 optimization.run('yaml.yaml')
+
